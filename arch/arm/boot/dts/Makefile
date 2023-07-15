@@ -633,6 +633,8 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
 	imx6ul-tx6ul-mainboard.dtb \
 	imx6ull-14x14-evk.dtb \
 	imx6ull-14x14-evk-emmc.dtb \
+	imx6ull-14x14-evk-test.dtb \
+	imx6ull-14x14-evk-emmc-test.dtb \
 	imx6ull-14x14-evk-btwifi.dtb \
 	imx6ull-14x14-evk-btwifi-oob.dtb \
 	imx6ull-14x14-evk-gpmi-weim.dtb \
