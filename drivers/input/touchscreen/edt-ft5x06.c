@@ -91,6 +91,7 @@ struct edt_ft5x06_ts_data {
 
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *wake_gpio;
+	struct gpio_desc *irq_gpio;
 
 #if defined(CONFIG_DEBUG_FS)
 	struct dentry *debug_dir;
@@ -239,8 +240,9 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
 		if (tsdata->version == EDT_M06 && type == TOUCH_EVENT_DOWN)
 			continue;
 
-		x = get_unaligned_be16(buf) & 0x0fff;
-		y = get_unaligned_be16(buf + 2) & 0x0fff;
+		/* 使用的触摸屏和FT5X06是反过来的 */
+		x = get_unaligned_be16(buf + 2) & 0x0fff;
+		y = get_unaligned_be16(buf) & 0x0fff;
 		/* The FT5x26 send the y coordinate first */
 		if (tsdata->version == EV_FT)
 			swap(x, y);
@@ -1083,6 +1085,15 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 		return error;
 	}
 
+	tsdata->irq_gpio = devm_gpiod_get_optional(&client->dev,
+						    "irq", GPIOD_OUT_LOW);
+	if (IS_ERR(tsdata->irq_gpio)) {
+		error = PTR_ERR(tsdata->irq_gpio);
+		dev_err(&client->dev,
+			"Failed to request GPIO irq pin, error %d\n", error);
+		return error;
+	}
+
 	if (tsdata->wake_gpio) {
 		usleep_range(5000, 6000);
 		gpiod_set_value_cansleep(tsdata->wake_gpio, 1);
@@ -1092,6 +1103,12 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 		usleep_range(5000, 6000);
 		gpiod_set_value_cansleep(tsdata->reset_gpio, 0);
 		msleep(300);
+	}
+
+	if (tsdata->irq_gpio) {
+		error = gpiod_direction_input(tsdata->irq_gpio);
+		if (error)
+			return error;
 	}
 
 	input = devm_input_allocate_device(&client->dev);
