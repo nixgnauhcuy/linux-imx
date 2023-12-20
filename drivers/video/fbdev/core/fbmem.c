@@ -519,6 +519,8 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 		image.dy = y;
 	}
 
+	image.dx = 0;
+	image.dy = 0;
 	image.width = logo->width;
 	image.height = logo->height;
 
