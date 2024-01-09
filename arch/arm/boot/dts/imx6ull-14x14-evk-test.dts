@@ -18,12 +18,12 @@
 	assigned-clock-rates = <320000000>, <786432000>;
 };
 
-&csi {
-	status = "okay";
-};
+// &csi {
+// 	status = "okay";
+// };
 
-&ov5640 {
-	status = "okay";
-};
+// &ov5640 {
+// 	status = "okay";
+// };
 
 /delete-node/ &sim2;

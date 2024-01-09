@@ -163,7 +163,7 @@
 };
 
 &csi {
-	status = "disabled";
+	status = "okay";
 
 	port {
 		csi1_ep: endpoint {
@@ -191,11 +191,12 @@
 		compatible = "ovti,ov5640";
 		reg = <0x3c>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_csi1>;
+		pinctrl-0 = <&pinctrl_csi1
+				&csi_pwn_rst>;
 		clocks = <&clks IMX6UL_CLK_CSI>;
 		clock-names = "csi_mclk";
-		pwn-gpios = <&gpio_spi 6 1>;
-		rst-gpios = <&gpio_spi 5 0>;
+		pwn-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
+		rst-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 		csi_id = <0>;
 		mclk = <24000000>;
 		mclk_source = <0>;
@@ -559,7 +560,7 @@
 		>;
 	};
 
-		/* paranoid HDMI RGB */
+	/* paranoid HDMI RGB */
 	pinctrl_hdmi_dat: hdmidatgrp {
 		/* do not change the pimux vlaue on alpaha and mini board*/
 		fsl,pins = <
@@ -926,6 +927,13 @@
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
+		>;
+	};
+
+	csi_pwn_rst: csi_pwn_rstgrp {
+		fsl,pins = <
+			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x10b0
+			MX6UL_PAD_GPIO1_IO04__GPIO1_IO04	0x10b0
 		>;
 	};
 };
